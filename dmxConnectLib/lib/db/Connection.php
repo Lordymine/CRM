@@ -10,6 +10,7 @@ class Connection
 {
 	public $app;
 	public $server;
+	public $options;
 	public $pdo;
 
 	public static function get(App $app, $name) {
@@ -21,7 +22,7 @@ class Connection
 		if (FileSystem::exists($path)) {
 			require(FileSystem::encode($path));
 			$data = json_decode($exports);
-            return new Connection($app, $data->options, $name);
+            return new Connection($app, $app->parseObject($data->options), $name);
 		}
 		
 		throw new \Exception('Connection "' . $name . '" not found.');
@@ -31,6 +32,7 @@ class Connection
 		$this->app = $app;
 
 		$options = $this->app->parseObject($options);
+		$this->options = $options;
 
 		if (!isset($options->connectionString)) {
 			throw new \Exception('Connection String is Required');
@@ -97,9 +99,7 @@ class Connection
 		}
 
 		if (preg_match('/^sqlite:/', $dsn)) {
-			if (!preg_match('(/^sqlite:\//|:\/)', $dsn)) {
-				$dsn = str_replace('sqlite:', 'sqlite:'. $_SERVER['DOCUMENT_ROOT'] . '/', $dsn);
-			}
+			$dsn = str_replace('sqlite:', 'sqlite:'. $_SERVER['DOCUMENT_ROOT'] . '/', $dsn);
 		}
 
 		$this->pdo = new PDO($dsn, $user, $password, $pdo_options);
@@ -108,7 +108,7 @@ class Connection
 		$this->app->db[$name] = $this;
 	}
 
-	public function execute($query, array $params, $returnRecords = TRUE, $table = '') {
+	public function execute($query, array $params, $returnRecords = TRUE, $table = '', $meta = []) {
 		$statement = $this->pdo->prepare($query);
 
 		foreach ($params as $key => $param) {
@@ -117,15 +117,19 @@ class Connection
 			if (isset($param->type) && isset($param->value) && is_string($param->value)) {
 				switch (strtolower($param->type)) {
 					case 'date':
-					$param->value = date('Y-m-d', strtotime($param->value));
-					break;
+						$param->value = date('Y-m-d', strtotime($param->value));
+						break;
 					case 'time':
-					$param->value = date('H:i:s', strtotime($param->value));
-					break;
+						$param->value = date('H:i:s', strtotime($param->value));
+						break;
 					case 'datetime':
-					$param->value = date('Y-m-d H:i:s', strtotime($param->value));
-					break;
+						$param->value = date('Y-m-d H:i:s', strtotime($param->value));
+						break;
 				}
+			}
+
+			if (isset($param->type) && $param->type == 'json') {
+				$param->value = json_encode($param->value);
 			}
 
 			if (isset($param->whereType) && $param->whereType == 'Like') {
@@ -140,7 +144,21 @@ class Connection
 		$statement->execute();
 
 		if ($returnRecords && $statement->columnCount() > 0) {
-			return $statement->fetchAll(PDO::FETCH_ASSOC);
+			$records = array();
+			$types = is_array($meta) ? array_column($meta, 'type', 'name') : array();
+
+			while ($row = $statement->fetch(PDO::FETCH_ASSOC)) {
+				foreach ($row as $name => $value) {
+					if ($value !== NULL && isset($types[$name]) && ($types[$name] == 'json' || $types[$name] == 'object' || $types[$name] == 'array')) {
+						// json support
+						$row[$name] = json_decode($value);
+					}
+				}
+				array_push($records, $row);
+			}
+
+			return $records;
+			//return $statement->fetchAll(PDO::FETCH_ASSOC);
 		}
 
 		$identity = NULL;

@@ -32,7 +32,7 @@ class SqlBuilder
     public function reset() {
         $this->type = 'select';
         $this->distinct = FALSE;
-        $this->table = '';
+        $this->table = NULL;
         $this->joins = array();
         $this->values = array();
         $this->wheres = array();
@@ -96,12 +96,31 @@ class SqlBuilder
         return $this;
     }
 
-    public function from($table = NULL) {
+    public function from($table = NULL, $alias = NULL) {
         if ($table === NULL) {
             return $this->table;
         }
 
-        $this->table = $table;
+        $this->table = (object)array(
+            'name' => $table
+        );
+
+        if ($alias !== NULL) {
+            $this->table->alias = $alias;
+        }
+
+        return $this;
+    }
+
+    public function into($table, $alias = NULL) {
+        $this->table = (object)array(
+            'name' => $table
+        );
+
+        if ($alias !== NULL) {
+            $this->table->alias = $alias;
+        }
+
         return $this;
     }
 
@@ -118,7 +137,7 @@ class SqlBuilder
     }
 
     public function where($column, $operator, $value, $bool = 'AND') {
-        $table = $this->table;
+        $table = isset($this->table->name) ? $this->table->name : $this->table;
 
         if (is_object($column)) {
             if (isset($column->table)) {
@@ -250,13 +269,13 @@ class SqlBuilder
 
         if (!is_object($column)) {
             $column = (object)array(
-                'table'  => $this->table,
+                'table'  => isset($this->table->name) ? $this->table->name : $this->table,
                 'column' => $column
             );
         }
 
         if (!isset($column->table)) {
-            $column->table = $this->table;
+            $column->table = isset($this->table->name) ? $this->table->name : $this->table;
         }
 
         if (isset($column->aggregate) && $column->aggregate != '') {
@@ -287,7 +306,7 @@ class SqlBuilder
     }
 
     private function compileJoin($join) {
-        return strtoupper($join->type) . ' JOIN ' . $this->quoteIdentifier($join->table) . (isset($join->alias) && $join->alias != '' ? ' AS ' . $this->quoteIdentifier($join->alias) : '') . str_replace('WHERE', ' ON', $this->compileWheres($join->clauses));
+        return (isset($join->type) ? strtoupper($join->type) : 'INNER') . ' JOIN ' . $this->quoteIdentifier($join->table) . (isset($join->alias) && $join->alias != '' ? ' AS ' . $this->quoteIdentifier($join->alias) : '') . str_replace('WHERE', ' ON', $this->compileWheres($join->clauses));
     }
 
     private function compileSet($values) {

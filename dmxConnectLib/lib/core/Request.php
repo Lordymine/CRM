@@ -18,14 +18,10 @@ class Request
     public $hostname;
     public $secure;
     public $xhr;
+    public $protocol;
 
     public function __construct($app) {
         $this->app = $app;
-        $this->server = $_SERVER;
-        $this->get = $_GET;
-        $this->post = $this->getPost();
-        $this->headers = $this->getHeaders();
-        $this->cookies = $_COOKIE;
 
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->ip = $_SERVER['REMOTE_ADDR'];
@@ -34,6 +30,15 @@ class Request
         $this->hostname = $_SERVER['SERVER_NAME'];
         $this->secure = !empty($_SERVER['HTTPS']);
         $this->xhr = isset($this->headers['x-requested-with']) && strtolower($this->headers['x-requested-with']) == 'xmlhttprequest';
+        $this->protocol = $this->secure ? 'https' : 'http';
+
+        $_SERVER['BASE_URL'] = $this->protocol . '://' . (isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost');
+
+        $this->server = $_SERVER;
+        $this->get = $_GET;
+        $this->post = $this->getPost();
+        $this->headers = $this->getHeaders();
+        $this->cookies = $_COOKIE;
     }
 
     private function getHeaders() {
@@ -55,7 +60,8 @@ class Request
         $post = $_POST;
 
         if (stripos($contentType, 'application/json') === 0) {
-            $post = json_decode(trim(file_get_contents('php://input')), TRUE);
+            $raw = $this->remove_utf8_bom(file_get_contents('php://input'));
+            $post = json_decode($raw, TRUE);
         } else {
             // Extend post data with files data
             foreach ($_FILES as $field => $file) {
@@ -74,6 +80,13 @@ class Request
         }
 
         return $post;
+    }
+
+    private function remove_utf8_bom($text)
+    {
+        $bom = pack('H*','EFBBBF');
+        $text = preg_replace("/^$bom/", '', $text);
+        return $text;
     }
 
     private function parseField($name, $src, &$dest) {

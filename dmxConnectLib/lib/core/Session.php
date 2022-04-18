@@ -5,7 +5,7 @@ namespace lib\core;
 class Session
 {
     public function __construct() {
-		if (PHP_SAPI != 'cli') {
+		if (PHP_SAPI != 'cli' && isset($_COOKIE[session_name()])) {
         	session_start();
             session_write_close();
 		}
@@ -29,6 +29,24 @@ class Session
 
     public function items() {
         return $_SESSION;
+    }
+
+    public function regenerate() {
+        session_start();
+        $CookieInfo = session_get_cookie_params();
+        if ((empty($CookieInfo['domain'])) && (empty($CookieInfo['secure']))) {
+            setcookie(session_name(), '', time()-3600, $CookieInfo['path']);
+        } elseif (empty($CookieInfo['secure'])) {
+            setcookie(session_name(), '', time()-3600, $CookieInfo['path'], $CookieInfo['domain']);
+        } else {
+            setcookie(session_name(), '', time()-3600, $CookieInfo['path'], $CookieInfo['domain'], $CookieInfo['secure']);
+        }
+        if (!empty($_SESSION)) {
+            session_regenerate_id(TRUE);
+        } else {
+            session_destroy();
+        }
+        session_write_close();
     }
 
     public function keys() {

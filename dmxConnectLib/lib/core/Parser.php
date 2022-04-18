@@ -28,6 +28,13 @@ if (file_exists($user_formatters_folder) && is_dir($user_formatters_folder)) {
     }
 }
 
+function uuid() {
+  $data = function_exists('random_bytes') ? random_bytes(16) : openssl_random_pseudo_bytes(16);
+  $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+  $data[7] = chr(ord($data[8]) & 0x3f | 0x80);
+  return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+
 class Parser
 {
     const OP_LEFT_CURLY = '{';
@@ -80,13 +87,14 @@ class Parser
         $this->reserved['NOW'] = function() use (&$self) { return date('Y-m-d\TH:i:s'); };
         $this->reserved['NOW_UTC'] = function() use (&$self) { return gmdate('Y-m-d\TH:i:s\Z'); };
         $this->reserved['TIMESTAMP'] = function() use (&$self) { return time(); };
-		$this->reserved['$this'] = function() use (&$self) { return $self->scope->data; };
-		$this->reserved['$global'] = function() use (&$self) { return $self->scope->global->data; };
-		$this->reserved['$parent'] = function() use (&$self) { return isset($self->scope->parent) ? $self->scope->parent->data : NULL; };
-		$this->reserved['null'] = function() use (&$self) { return NULL; };
-		$this->reserved['true'] = function() use (&$self) { return TRUE; };
-		$this->reserved['false'] = function() use (&$self) { return FALSE; };
-		$this->reserved['_'] = function() use (&$self) { return array('__dmxScope__' => TRUE); };
+        $this->reserved['UUID'] = function() use (&$self) { return uuid(); };
+        $this->reserved['$this'] = function() use (&$self) { return $self->scope->data; };
+        $this->reserved['$global'] = function() use (&$self) { return $self->scope->global->data; };
+        $this->reserved['$parent'] = function() use (&$self) { return isset($self->scope->parent) ? $self->scope->parent->data : NULL; };
+        $this->reserved['null'] = function() use (&$self) { return NULL; };
+        $this->reserved['true'] = function() use (&$self) { return TRUE; };
+        $this->reserved['false'] = function() use (&$self) { return FALSE; };
+        $this->reserved['_'] = function() use (&$self) { return array('__dmxScope__' => TRUE); };
     }
 
     public function parse($expression, Scope $scope = NULL) {
@@ -220,91 +228,91 @@ class Parser
     }
 
     private function equality() {
-		$left = $this->relational();
+    $left = $this->relational();
 
-		if ($token = $this->expect(array(self::OP_EQ, self::OP_NE, self::OP_STRICT_EQ, self::OP_STRICT_NE), Token::OPERATOR)) {
-			$left = self::execute($token->value, $left, $this->equality());
-		}
+    if ($token = $this->expect(array(self::OP_EQ, self::OP_NE, self::OP_STRICT_EQ, self::OP_STRICT_NE), Token::OPERATOR)) {
+      $left = self::execute($token->value, $left, $this->equality());
+    }
 
-		return $left;
-	}
+    return $left;
+  }
 
-    	private function relational() {
-		$left = $this->bitwiseShift();
+      private function relational() {
+    $left = $this->bitwiseShift();
 
-		if ($token = $this->expect(array(self::OP_LT, self::OP_LE, self::OP_GT, self::OP_GE, self::OP_IN), Token::OPERATOR)) {
-			$left = self::execute($token->value, $left, $this->relational());
-		}
+    if ($token = $this->expect(array(self::OP_LT, self::OP_LE, self::OP_GT, self::OP_GE, self::OP_IN), Token::OPERATOR)) {
+      $left = self::execute($token->value, $left, $this->relational());
+    }
 
-		return $left;
-	}
+    return $left;
+  }
 
-	private function bitwiseShift() {
-		$left = $this->addictive();
+  private function bitwiseShift() {
+    $left = $this->addictive();
 
-		while ($token = $this->expect(array(self::OP_LSH, self::OP_RSH, self::OP_URSH), Token::OPERATOR)) {
-			$left = self::execute($token->value, $left, $this->addictive());
-		}
+    while ($token = $this->expect(array(self::OP_LSH, self::OP_RSH, self::OP_URSH), Token::OPERATOR)) {
+      $left = self::execute($token->value, $left, $this->addictive());
+    }
 
-		return $left;
-	}
+    return $left;
+  }
 
-	private function addictive() {
-		$left = $this->multiplicative();
+  private function addictive() {
+    $left = $this->multiplicative();
 
-		while ($token = $this->expect(array(self::OP_PLUS, self::OP_MINUS), Token::OPERATOR)) {
-			$left = self::execute($token->value, $left, $this->multiplicative());
-		}
+    while ($token = $this->expect(array(self::OP_PLUS, self::OP_MINUS), Token::OPERATOR)) {
+      $left = self::execute($token->value, $left, $this->multiplicative());
+    }
 
-		return $left;
-	}
+    return $left;
+  }
 
-	private function multiplicative() {
-		$left = $this->unary();
+  private function multiplicative() {
+    $left = $this->unary();
 
-		while ($token = $this->expect(array(self::OP_MUL, self::OP_DIV, self::OP_MOD), Token::OPERATOR)) {
-			$left = self::execute($token->value, $left, $this->unary());
-		}
+    while ($token = $this->expect(array(self::OP_MUL, self::OP_DIV, self::OP_MOD), Token::OPERATOR)) {
+      $left = self::execute($token->value, $left, $this->unary());
+    }
 
-		return $left;
-	}
+    return $left;
+  }
 
-	private function unary() {
-		if ($token = $this->expect(array(self::OP_PLUS, self::OP_MINUS), Token::OPERATOR)) {
-			if ($token->value == self::OP_PLUS) {
-				return $this->group();
-			}
+  private function unary() {
+    if ($token = $this->expect(array(self::OP_PLUS, self::OP_MINUS), Token::OPERATOR)) {
+      if ($token->value == self::OP_PLUS) {
+        return $this->group();
+      }
 
-			return self::execute($token->value, $this->fn(0), $this->unary());
-		} elseif ($token = $this->expect(self::OP_LOGICAL_NOT, Token::OPERATOR)) {
-			return self::execute($token->value, $this->unary());
-		}
+      return self::execute($token->value, $this->fn(0), $this->unary());
+    } elseif ($token = $this->expect(self::OP_LOGICAL_NOT, Token::OPERATOR)) {
+      return self::execute($token->value, $this->unary());
+    }
 
-		return $this->group();
-	}
+    return $this->group();
+  }
 
     private function group() {
-		if ($this->expect(self::OP_LEFT_PAREN, Token::OPERATOR)) {
-			$value = $this->expression();
-			$this->consume(self::OP_RIGHT_PAREN, Token::OPERATOR);
+    if ($this->expect(self::OP_LEFT_PAREN, Token::OPERATOR)) {
+      $value = $this->expression();
+      $this->consume(self::OP_RIGHT_PAREN, Token::OPERATOR);
 
-			while ($next = $this->expect(array(self::OP_LEFT_BRACKET, self::OP_DOT), Token::OPERATOR)) {
-				if ($next->value == self::OP_LEFT_BRACKET) {
-					// index
-					$value = $this->fn($this->objectIndex($value));
-				} elseif ($next->value == self::OP_DOT) {
-					// member
-					$value = $this->fn($this->objectMember($value));
-				} else {
-					throw new \Exception('Unexpected token ('.$next->value.').');
-				}
-			}
+      while ($next = $this->expect(array(self::OP_LEFT_BRACKET, self::OP_DOT), Token::OPERATOR)) {
+        if ($next->value == self::OP_LEFT_BRACKET) {
+          // index
+          $value = $this->fn($this->objectIndex($value));
+        } elseif ($next->value == self::OP_DOT) {
+          // member
+          $value = $this->fn($this->objectMember($value));
+        } else {
+          throw new \Exception('Unexpected token ('.$next->value.').');
+        }
+      }
 
-			return $value;
-		}
+      return $value;
+    }
 
-		return $this->primary();
-	}
+    return $this->primary();
+  }
 
     private function primary() {
         $token = $this->expect();
@@ -371,218 +379,219 @@ class Parser
     }
 
     private function objectIndex($value) {
-		$index = $this->expression();
-		$index = $index();
+    $index = $this->expression();
+    $index = $index();
 
-		$this->consume(self::OP_RIGHT_BRACKET);
+    $this->consume(self::OP_RIGHT_BRACKET);
 
-		$data = $value();
+    $data = $value();
 
-		if ($this->getProperty($data, '__dmxScope__') != NULL) {
-			return $this->scope->get($index);
-		}
+    if ($this->getProperty($data, '__dmxScope__') != NULL) {
+      return $this->scope->get($index);
+    }
 
-		return $this->getProperty($data, $index);
-	}
+    return $this->getProperty($data, $index);
+  }
 
     private function objectMember($value) {
-		$token = $this->expect(NULL, Token::IDENTIFIER);
+    $token = $this->expect(NULL, Token::IDENTIFIER);
 
-		if (!$token) {
-			throw new \Exception('Unexpected token (' . $this->peek()->value . ').');
-		}
+    if (!$token) {
+      throw new \Exception('Unexpected token (' . $this->peek()->value . ').');
+    }
 
-		$data = $value();
+    $data = $value();
 
-		if ($this->expect(self::OP_LEFT_PAREN, Token::OPERATOR)) {
-			$args = array($data);
+    if ($this->expect(self::OP_LEFT_PAREN, Token::OPERATOR)) {
+      $args = array($data);
 
-			if ($this->peek()->value !== self::OP_RIGHT_PAREN) {
-				do {
-					$arg = $this->expression();
-					$args[] = $arg();
-				} while ($this->expect(self::OP_COMMA, Token::OPERATOR));
-			}
+      $peek = $this->peek();
+      if ($peek->type !== Token::OPERATOR || $peek->value !== self::OP_RIGHT_PAREN) {
+          do {
+              $arg = $this->expression();
+              $args[] = $arg();
+          } while ($this->expect(self::OP_COMMA, Token::OPERATOR));
+      }
 
-			$this->consume(self::OP_RIGHT_PAREN);
+      $this->consume(self::OP_RIGHT_PAREN);
 
-			if (is_callable('\lib\core\formatter_'.$token->value)) {
-				return call_user_func_array('\lib\core\formatter_'.$token->value, $args);
-			} else {
-				//return NULL;
+      if (is_callable('\lib\core\formatter_'.$token->value)) {
+        return call_user_func_array('\lib\core\formatter_'.$token->value, $args);
+      } else {
+        //return NULL;
                 throw new \Exception('Formatter ' . $token->value . ' does not exist.');
-			}
-		}
+      }
+    }
 
-		if ($this->getProperty($data, '__dmxScope__') != NULL) {
-			return $this->scope->get($token->value);
-		}
+    if ($this->getProperty($data, '__dmxScope__') != NULL) {
+      return $this->scope->get($token->value);
+    }
 
-		return $this->getProperty($data, $token->value);
-	}
+    return $this->getProperty($data, $token->value);
+  }
 
     private function getProperty($object, $prop) {
-		switch (gettype($object)) {
-			case 'string':
-				return $prop === 'length' ? utf8_strlen($object) : NULL;
+    switch (gettype($object)) {
+      case 'string':
+        return $prop === 'length' ? utf8_strlen($object) : NULL;
 
-			case 'array':
-				return $prop === 'length' ? count($object) : (isset($object[$prop]) ? $object[$prop] : NULL);
+      case 'array':
+        return $prop === 'length' ? count($object) : (isset($object[$prop]) ? $object[$prop] : NULL);
 
-			case 'object':
-				return isset($object->$prop) ? $object->$prop : NULL;
+      case 'object':
+        return isset($object->$prop) ? $object->$prop : NULL;
 
-			default:
-				return NULL;
-		}
-	}
+      default:
+        return NULL;
+    }
+  }
 
     public static function execute($op, $a, $b = null, $c = null) {
-		switch ($op) {
-			case self::OP_COLON:
-				return function() use ($a, $b, $c) {
-					return $a() ? $b() : $c();
-				};
+    switch ($op) {
+      case self::OP_COLON:
+        return function() use ($a, $b, $c) {
+          return $a() ? $b() : $c();
+        };
 
-			case self::OP_LOGICAL_OR:
-				return function() use ($a, $b) {
-					return $a() || $b();
-				};
+      case self::OP_LOGICAL_OR:
+        return function() use ($a, $b) {
+          return $a() || $b();
+        };
 
-			case self::OP_LOGICAL_AND:
-				return function() use ($a, $b) {
-					return $a() && $b();
-				};
+      case self::OP_LOGICAL_AND:
+        return function() use ($a, $b) {
+          return $a() && $b();
+        };
 
-			case self::OP_BITWISE_OR:
-				return function() use ($a, $b) {
-					return $a() | $b();
-				};
+      case self::OP_BITWISE_OR:
+        return function() use ($a, $b) {
+          return $a() | $b();
+        };
 
-			case self::OP_BITWISE_XOR:
-				return function() use ($a, $b) {
-					return $a() ^ $b();
-				};
+      case self::OP_BITWISE_XOR:
+        return function() use ($a, $b) {
+          return $a() ^ $b();
+        };
 
-			case self::OP_BITWISE_AND:
-				return function() use ($a, $b) {
-					return $a() & $b();
-				};
+      case self::OP_BITWISE_AND:
+        return function() use ($a, $b) {
+          return $a() & $b();
+        };
 
-			case self::OP_EQ:
-				return function() use ($a, $b) {
-					return $a() == $b();
-				};
+      case self::OP_EQ:
+        return function() use ($a, $b) {
+          return $a() == $b();
+        };
 
-			case self::OP_NE:
-				return function() use ($a, $b) {
-					return $a() != $b();
-				};
+      case self::OP_NE:
+        return function() use ($a, $b) {
+          return $a() != $b();
+        };
 
-			case self::OP_STRICT_EQ:
-				return function() use ($a, $b) {
-					return $a() === $b();
-				};
+      case self::OP_STRICT_EQ:
+        return function() use ($a, $b) {
+          return $a() === $b();
+        };
 
-			case self::OP_STRICT_NE:
-				return function() use ($a, $b) {
-					return $a() !== $b();
-				};
+      case self::OP_STRICT_NE:
+        return function() use ($a, $b) {
+          return $a() !== $b();
+        };
 
-			case self::OP_LT:
-				return function() use ($a, $b) {
-					return $a() < $b();
-				};
+      case self::OP_LT:
+        return function() use ($a, $b) {
+          return $a() < $b();
+        };
 
-			case self::OP_LE:
-				return function() use ($a, $b) {
-					return $a() <= $b();
-				};
+      case self::OP_LE:
+        return function() use ($a, $b) {
+          return $a() <= $b();
+        };
 
-			case self::OP_GT:
-				return function() use ($a, $b) {
-					return $a() > $b();
-				};
+      case self::OP_GT:
+        return function() use ($a, $b) {
+          return $a() > $b();
+        };
 
-			case self::OP_GE:
-				return function() use ($a, $b) {
-					return $a() >= $b();
-				};
+      case self::OP_GE:
+        return function() use ($a, $b) {
+          return $a() >= $b();
+        };
 
-			case self::OP_IN:
-				return function() use ($a, $b) {
-					// TODO: simulate the in operation from javascript
-					// return $a() in $b();
-					$aa = $a();
-					$bb = $b();
+      case self::OP_IN:
+        return function() use ($a, $b) {
+          // TODO: simulate the in operation from javascript
+          // return $a() in $b();
+          $aa = $a();
+          $bb = $b();
 
-					if (is_array($bb)) {
-						return array_key_exists($aa, $bb);
-					}
+          if (is_array($bb)) {
+            return array_key_exists($aa, $bb);
+          }
 
-					if (is_object($bb)) {
-						return property_exists($bb, $aa);
-					}
+          if (is_object($bb)) {
+            return property_exists($bb, $aa);
+          }
 
-					return false;
-				};
+          return false;
+        };
 
-			case self::OP_LSH:
-				return function() use ($a, $b) {
-					return $a() << $b();
-				};
+      case self::OP_LSH:
+        return function() use ($a, $b) {
+          return $a() << $b();
+        };
 
-			case self::OP_RSH:
-				return function() use ($a, $b) {
-					return $a() >> $b();
-				};
+      case self::OP_RSH:
+        return function() use ($a, $b) {
+          return $a() >> $b();
+        };
 
-			case self::OP_URSH:
-				return function() use ($a, $b) {
-					return $a() >> $b();
-				};
+      case self::OP_URSH:
+        return function() use ($a, $b) {
+          return $a() >> $b();
+        };
 
-			case self::OP_PLUS:
-				return function() use ($a, $b) {
-					$aa = $a();
-					$bb = $b();
+      case self::OP_PLUS:
+        return function() use ($a, $b) {
+          $aa = $a();
+          $bb = $b();
 
-					if (is_string($aa) || is_string($bb)) {
-						return $aa . $bb;
-					}
+          if (is_string($aa) || is_string($bb)) {
+            return $aa . $bb;
+          }
 
-					return $aa + $bb;
-				};
+          return $aa + $bb;
+        };
 
-			case self::OP_MINUS:
-				return function() use ($a, $b) {
-					return $a() - $b();
-				};
+      case self::OP_MINUS:
+        return function() use ($a, $b) {
+          return $a() - $b();
+        };
 
-			case self::OP_MUL:
-				return function() use ($a, $b) {
-					return $a() * $b();
-				};
+      case self::OP_MUL:
+        return function() use ($a, $b) {
+          return $a() * $b();
+        };
 
-			case self::OP_DIV:
-				return function() use ($a, $b) {
-					return $a() / $b();
-				};
+      case self::OP_DIV:
+        return function() use ($a, $b) {
+          return $a() / $b();
+        };
 
-			case self::OP_MOD:
-				return function() use ($a, $b) {
-					return $a() % $b();
-				};
+      case self::OP_MOD:
+        return function() use ($a, $b) {
+          return $a() % $b();
+        };
 
-			case self::OP_LOGICAL_NOT:
-				return function() use ($a) {
-					return !$a();
-				};
+      case self::OP_LOGICAL_NOT:
+        return function() use ($a) {
+          return !$a();
+        };
 
-			case self::OP_BITWISE_NOT:
-				return function() use ($a) {
-					return ~$a();
-				};
-		}
-	}
+      case self::OP_BITWISE_NOT:
+        return function() use ($a) {
+          return ~$a();
+        };
+    }
+  }
 }

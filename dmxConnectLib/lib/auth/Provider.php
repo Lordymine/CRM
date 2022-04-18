@@ -93,12 +93,15 @@ class Provider
 
 	public function setIdentity($identity = FALSE) {
 		$this->identity = $identity;
-		$this->app->session->set($this->cfg->name . 'Id', $identity);
-
-		if (!$identity) {
+		
+		if ($identity) {
+			$this->app->session->set($this->cfg->name . 'Id', $identity);
+		} else {
 			$this->app->session->remove($this->cfg->name . 'Id');
 			$this->app->response->clearCookie($this->cfg->name, $this->cfg);
 		}
+        
+		$this->app->session->regenerate();
 	}
 
 	public function readCookie() {
@@ -159,6 +162,7 @@ class Provider
 	public function restrict($opts) {
 		if (!$this->identity) {
 			if (isset($opts->loginUrl) && !empty($opts->loginUrl)) {
+				header('Cache-Control: no-store');
 				header('Location: ' . $opts->loginUrl);
 				die();
 			} else {
@@ -173,6 +177,7 @@ class Provider
 			$opts->permissions = is_array($opts->permissions) ? $opts->permissions : array($opts->permissions);
 			if (!$this->provider->permissions($this->identity, $opts->permissions)) {
 				if (isset($opts->forbiddenUrl) && !empty($opts->forbiddenUrl)) {
+					header('Cache-Control: no-store');
 					header('Location: ' . $opts->forbiddenUrl);
 					die();
 				} else {
