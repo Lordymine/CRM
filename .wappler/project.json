@@ -34,14 +34,14 @@
       "access": "local"
     },
     {
-      "name": "crm",
+      "name": "teste",
       "remoteURL": "https://crm-rafa.herokuapp.com",
       "targetType": "heroku",
       "usage": "production",
       "herokuProjectID": "crm-rafa"
     }
   ],
-  "activeTarget": "crm",
+  "activeTarget": "teste",
   "useRouting": true,
   "addBase": true,
   "routingHandler": "apache",
