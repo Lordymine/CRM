@@ -1,0 +1,36 @@
+## Wappler routing
+RewriteEngine On
+<IfModule mod_negotiation.c>
+    Options -MultiViews
+</IfModule>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?(?:/)?$ painel/login.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel(?:/)?$ painel/dashboard.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/login(?:/)?$ painel/login.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/usuarios/resete-de-senha/([^/]+?)(?:/)?$ painel/forgot_password.php?token=$1 [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/usuarios/sair(?:/)?$ dmxConnect/api/users/logout.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/usuarios/perfil(?:/([^/]+?))?(?:/)?$ painel/usuarios/perfil.php?token=$1 [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/usuarios(?:/)?$ painel/usuarios/listar.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/chamados/gerenciar(?:/([^/]+?))?(?:/)?$ painel/chamados/gerenciar.php?token=$1 [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/produtos(?:/)?$ painel/produtos/listar_produtos.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/chamados(?:/([^/]+?))?(?:/)?$ painel/chamados/listar.php?status=$1 [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/departamentos-chamados(?:/)?$ painel/departamentos_chamados/listar.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/status-chamados(?:/)?$ painel/status_chamados/listar.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/tipos-usuarios(?:/)?$ painel/tipos_usuarios/listar.php [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?painel/chamados/detaill-followups/([^/]+?)(?:/)?$ painel/chamados/detaill_followups.php?token=$1 [QSA,NC,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^/?api/notifications/redirect-notification/([^/]+?)/([^/]+?)(?:/)?$ dmxConnect/api/notifications/redirect_notification.php?notification_id=$1&ticket_token=$2 [QSA,NC,L]
+## End Wappler routing

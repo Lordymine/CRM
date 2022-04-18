@@ -1,0 +1,51 @@
+{
+  "projectName": "Projeto Crm",
+  "styleFile": "/assets/css/main.css",
+  "assetsFolder": "/assets",
+  "designFramework": "bootstrap5",
+  "frameworks": [
+    {
+      "name": "fontawesome_5",
+      "type": "cdn"
+    },
+    {
+      "name": "appConnect",
+      "type": "local"
+    },
+    {
+      "name": "jquery_slim_35",
+      "type": "local"
+    },
+    {
+      "name": "bootstrap4",
+      "type": "custom",
+      "options": {
+        "jsIncludePath": "/assets/js/bootstrap.min.js",
+        "cssIncludePath": "/assets/css/main.css"
+      }
+    }
+  ],
+  "projectServerModel": "PHP",
+  "runtime": "capacitor",
+  "targets": [
+    {
+      "name": "Development",
+      "remoteURL": "https://www.rafa.projetocrm.com.br/",
+      "access": "local"
+    },
+    {
+      "name": "heroku",
+      "remoteURL": "https://crm-rafa.herokuapp.com",
+      "targetType": "heroku",
+      "usage": "production",
+      "herokuProjectID": "crm-rafa"
+    }
+  ],
+  "activeTarget": "heroku",
+  "useRouting": true,
+  "addBase": true,
+  "routingHandler": "apache",
+  "projectType": "web",
+  "projectLinksType": "site",
+  "userUploadsFolder": "/assets/uploads"
+}

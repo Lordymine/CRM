@@ -1,0 +1,64 @@
+{
+  "routes": [
+    {
+      "path": "/",
+      "url": "/painel/login.php"
+    },
+    {
+      "path": "/painel",
+      "url": "/painel/dashboard.php"
+    },
+    {
+      "path": "/painel/login",
+      "url": "/painel/login.php"
+    },
+    {
+      "path": "/painel/usuarios/resete-de-senha/:token",
+      "url": "/painel/forgot_password.php"
+    },
+    {
+      "path": "/painel/usuarios/sair",
+      "url": "/dmxConnect/api/users/logout.php"
+    },
+    {
+      "path": "/painel/usuarios/perfil/:token?",
+      "url": "/painel/usuarios/perfil.php"
+    },
+    {
+      "path": "/painel/usuarios",
+      "url": "/painel/usuarios/listar.php"
+    },
+    {
+      "path": "/painel/chamados/gerenciar/:token?",
+      "url": "/painel/chamados/gerenciar.php"
+    },
+    {
+      "path": "/painel/produtos",
+      "url": "/painel/produtos/listar_produtos.php"
+    },
+    {
+      "path": "/painel/chamados/:status?",
+      "url": "/painel/chamados/listar.php"
+    },
+    {
+      "path": "/painel/departamentos-chamados",
+      "url": "/painel/departamentos_chamados/listar.php"
+    },
+    {
+      "path": "/painel/status-chamados",
+      "url": "/painel/status_chamados/listar.php"
+    },
+    {
+      "path": "/painel/tipos-usuarios",
+      "url": "/painel/tipos_usuarios/listar.php"
+    },
+    {
+      "path": "/painel/chamados/detaill-followups/:token",
+      "url": "/painel/chamados/detaill_followups.php"
+    },
+    {
+      "path": "/api/notifications/redirect-notification/:notification_id/:ticket_token",
+      "url": "/dmxConnect/api/notifications/redirect_notification.php"
+    }
+  ]
+}

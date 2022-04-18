@@ -1,0 +1,400 @@
+{
+  "type": "mysql",
+  "connection": {
+    "host": "localhost",
+    "user": "root",
+    "database": "crm"
+  },
+  "direct": true,
+  "schema": {
+    "tables": {
+      "permissions": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "users": "permission_level"
+        }
+      },
+      "notifications": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "followups": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "files": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "department_tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "tickets": "department_id"
+        }
+      },
+      "users": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "columns": {
+          "id": {
+            "db": {
+              "type": "increments",
+              "primary": true,
+              "nullable": false
+            }
+          },
+          "fullname": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "email": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "password": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "cellphone": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "cpf": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "cnpj": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "zipcode": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "address": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "neightborhood": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "city": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "uf": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "company": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "phone": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "avatar": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "token": {
+            "db": {
+              "type": "string",
+              "maxLength": 255,
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "status": {
+            "db": {
+              "type": "integer",
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "type_user_id": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "nullable": true,
+              "references": "id",
+              "inTable": "type_user",
+              "onUpdate": "SET NULL",
+              "onDelete": "SET NULL"
+            }
+          },
+          "permission_level": {
+            "db": {
+              "type": "reference",
+              "primary": false,
+              "nullable": true,
+              "references": "id",
+              "inTable": "permissions",
+              "onUpdate": "CASCADE",
+              "onDelete": "SET NULL"
+            }
+          },
+          "created_at": {
+            "db": {
+              "type": "datetime",
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "updated_at": {
+            "db": {
+              "type": "datetime",
+              "primary": false,
+              "nullable": true
+            }
+          },
+          "department_id": {
+            "db": {
+              "type": "integer",
+              "primary": false,
+              "nullable": true
+            }
+          }
+        },
+        "refs": {
+          "notifications": "user_id",
+          "followups": "author_id",
+          "files": "author_id",
+          "tickets": "client_id"
+        }
+      },
+      "type_user": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "users": "type_user_id"
+        }
+      },
+      "tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "notifications": "ticket_id",
+          "followups": "ticket_id",
+          "files": "ticket_id"
+        }
+      },
+      "status_tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "products": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "tickets": "product_id"
+        }
+      }
+    },
+    "views": {},
+    "collations": [
+      {
+        "collation": "utf8_general_ci",
+        "charset": "utf8"
+      },
+      {
+        "collation": "utf8_general_mysql500_ci",
+        "charset": "utf8"
+      },
+      {
+        "collation": "utf8mb4_general_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_bin",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_unicode_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_icelandic_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_latvian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_romanian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_slovenian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_polish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_estonian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_spanish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_swedish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_turkish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_czech_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_danish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_lithuanian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_slovak_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_spanish2_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_roman_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_persian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_esperanto_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_hungarian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_sinhala_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_german2_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_croatian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_unicode_520_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_vietnamese_ci",
+        "charset": "utf8mb4"
+      }
+    ]
+  }
+}
