@@ -57,7 +57,12 @@ function formatter_humanize($val) {
 
 function formatter_slugify($val) {
     if ($val == NULL) return NULL;
+    $a = 'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜüÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûýýþÿŔŕ';
+    $b = 'aaaaaaaceeeeiiiidnoooooouuuuuybsaaaaaaaceeeeiiiidnoooooouuuyybyRr';   
     $val = strval($val);
+    $val = strtr($val, $a, $b);
+    $val = strip_tags($val);
+    $val = utf8_decode($val);
     $val = preg_replace('/[^\w\s]/', '', $val);
     $val = strtolower($val);
     $val = preg_replace('/[_\s]+/', '-', $val);

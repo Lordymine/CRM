@@ -7,6 +7,7 @@ class core extends \lib\core\Singleton
     public $required = "This field is required.";
     public $email = "Please enter a valid email address.";
     public $url = "Please enter a valid URL.";
+    public $datetime = "Please enter a valid datetime.";
     public $date = "Please enter a valid date.";
     public $time = "Please enter a valid time.";
     public $month = "Please enter a valid month.";

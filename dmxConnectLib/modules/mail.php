@@ -75,7 +75,8 @@ class mail extends Module
                 $mail->Password = $setup->password;
             }
         } else {
-            $mail->isSendmail();
+            //$mail->isSendmail();
+            $mail->isMail();
         }
 
         $mail->setFrom($options->fromEmail, $options->fromName);

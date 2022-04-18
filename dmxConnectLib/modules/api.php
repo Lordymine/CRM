@@ -254,7 +254,16 @@ class api extends Module
         }
     }
 
+    protected function remove_utf8_bom($text)
+    {
+        $bom = pack('H*','EFBBBF');
+        $text = preg_replace("/^$bom/", '', $text);
+        return $text;
+    }
+
     protected function parseBody($rawBody) {
+        $rawBody = $this->remove_utf8_bom($rawBody);
+
         $json = json_decode($rawBody);
 
         if (json_last_error() === JSON_ERROR_NONE) {

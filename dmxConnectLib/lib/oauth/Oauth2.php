@@ -21,7 +21,7 @@ class Oauth2
 		if (FileSystem::exists($path)) {
 			require(FileSystem::encode($path));
 			$data = json_decode($exports);
-            return new Oauth2($app, $data->options, $name);
+            return new Oauth2($app, $app->parseObject($data->options), $name);
 		}
 		
 		throw new \Exception('OAuth2 provider "' . $name . '" not found.');
@@ -298,14 +298,18 @@ class Oauth2
     }
 
     protected function getRedirectUri() {
-        $https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on';
+        $https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https');
         $port = $_SERVER['SERVER_PORT'];
 
         $url = 'http';
         $url .= $https ? 's' : '';
         $url .= '://';
-        $url .= $_SERVER['SERVER_NAME'];
-        $url .= ($https && $port == '443') || (!$https && $port == '80') ? '' : ':' . $port;
+        if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+            $url .= $_SERVER['HTTP_X_FORWARDED_HOST'];
+        } else {
+            $url .= $_SERVER['SERVER_NAME'];
+            $url .= isset($_SERVER['HTTP_X_FORWARDED_PROTO']) || ($https && $port == '443') || (!$https && $port == '80') ? '' : ':' . $port;
+        }
         $url .= parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
 
         return $url;
@@ -328,6 +332,7 @@ class Oauth2
     }
 
     protected function redirect($url) {
+        header('Cache-Control: no-store');
         header("Location: {$url}");
         exit();
     }

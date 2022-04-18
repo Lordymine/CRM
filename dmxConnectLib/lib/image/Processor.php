@@ -194,7 +194,7 @@ class Processor extends \lib\core\NamedSingleton
             }
         }
 
-        if (imagecopyresampled($image, $this->image, 0, 0, $src_w, $src_y, $width, $height, $src_w, $src_h)) {
+        if (imagecopyresampled($image, $this->image, 0, 0, $src_x, $src_y, $width, $height, $src_w, $src_h)) {
             imagedestroy($this->image);
             $this->image = $image;
             $this->width = $width;

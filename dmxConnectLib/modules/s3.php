@@ -43,7 +43,7 @@ class s3 extends Module
 		if (FileSystem::exists($path)) {
             require(FileSystem::encode($path));
             $data = json_decode($exports);
-            return $this->provider($data->options, $name);
+            return $this->provider($this->app->parseObject($data->options), $name);
 		}
 		
 		throw new \Exception('S3 Client "' . $name . '" not found.');
@@ -63,7 +63,7 @@ class s3 extends Module
             'ACL' => $options->acl
         ));
 
-        $client->waitUntil('BucketExists', array(
+        $s3->waitUntil('BucketExists', array(
             'Bucket' => $options->bucket
         ));
 
@@ -203,16 +203,20 @@ class s3 extends Module
 
         $s3 = $this->getClient($options->provider);
 
-        $data = $s3->getObject([
+        if (!$s3->doesObjectExist($options->bucket, $options->key)) {
+            $this->app->response->end(404);
+        }
+
+        $result = $s3->getObject([
             'Bucket' => $options->bucket,
-            'Key' => $options->key,
-            'ResponseContentType' => 'application/octet-stream',
-            'ResponseContentDisposition' => 'attachment; filename=' . $options->key,
-            'ResponseCacheControl' => 'No-cache',
-            'ResponseExpires' => gmdate(DATE_RFC2822, time() + 3600)
+            'Key' => $options->key
         ]);
 
-        return;
+        header('Content-Type: ' . $result['ContentType']);
+        header('Content-Disposition: attachment; filename="' . basename($options->key) . '"');
+        header('Content-Length: ' . $result['ContentLength']);
+
+        exit($result['Body']);
     }
 
     public function signDownloadUrl($options) {

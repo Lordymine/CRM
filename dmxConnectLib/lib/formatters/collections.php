@@ -138,12 +138,14 @@ function formatter_groupBy($val, $prop) {
 function formatter_sort($val, $prop = NULL) {
     if (!is_array($val)) return $val;
     if ($prop != NULL) {
-        return usort($val, function($a, $b) use ($prop) {
+        usort($val, function($a, $b) use ($prop) {
             if ($a[$prop] == $b[$prop]) return 0;
             return ($a[$prop] < $b[$prop]) ? -1 : 1;
         });
+    } else {
+        sort($val);
     }
-    return sort($val);
+    return $val;
 }
 
 function formatter_randomize($val) {
@@ -196,4 +198,9 @@ function formatter_keys($val) {
 function formatter_values($val) {
     if (!is_array($val) && !is_object($val)) return array();
     return array_values((array)$val);
+}
+
+function formatter_flatten($val, $prop) {
+    if (!is_array($val) && !is_object($val)) return array();
+    return array_column((array)$val, $prop);
 }

@@ -26,6 +26,8 @@ class jwt extends Module
         option_require($options, 'alg');
         option_require($options, 'key');
 
+        $options = $this->app->parseObject($options);
+
         $time = time();
 
         $header = array(
@@ -77,5 +79,30 @@ class jwt extends Module
         ));
 
         return $this->app->jwt[$name];
+    }
+
+    public function decode($options) {
+        option_require($options, 'token');
+
+        $options = $this->app->parseObject($options);
+
+        return \lib\jwt\Jwt::decode($options);
+    }
+
+    public function verify($options) {
+        option_require($options, 'token');
+        option_require($options, 'key');
+
+        $options = $this->app->parseObject($options);
+
+        $payload = NULL;
+
+        try {
+            $payload = \lib\jwt\Jwt::verify($options);
+        } catch (\Exception $err) {
+            // Invalid
+        }
+
+        return $payload;
     }
 }

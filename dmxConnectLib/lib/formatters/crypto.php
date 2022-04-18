@@ -2,6 +2,14 @@
 
 namespace lib\core;
 
+function formatter_uuid() {
+    $data = function_exists('random_bytes') ? random_bytes(16) : openssl_random_pseudo_bytes(16);
+    $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+    $data[7] = chr(ord($data[8]) & 0x3f | 0x80);
+    return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+}
+  
+
 function formatter_md5($val, $salt = '') {
     return md5($val . $salt);
 }
@@ -18,12 +26,28 @@ function formatter_sha512($val, $salt = '') {
     return hash('sha512', $val . $salt);
 }
 
+function formatter_hash($val, $algo) {
+    return hash($algo, $val);
+}
+
+function formatter_hmac($val, $algo, $key) {
+    return hash_hmac($algo, $val, $key);
+}
+
 function formatter_encodeBase64($val) {
     return base64_encode($val);
 }
 
 function formatter_decodeBase64($val) {
     return base64_decode($val);
+}
+
+function formatter_encodeBase64Url($val) {
+    return str_replace(array('=', '+', '/'), array('', '-', '_'), base64_encode($val));
+}
+
+function formatter_decodeBase64Url($val) {
+    return base64_decode(str_replace(array('-', '_'), array('+', '/'), $val));
 }
 
 function formatter_encrypt($val, $password) {

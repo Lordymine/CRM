@@ -10,6 +10,8 @@ class core extends Module
 {
     public function repeat($options) {
 		option_require($options, 'repeat');
+        option_default($options, 'outputFilter', 'include');
+        option_default($options, 'outputFields', array());
 
         $repeater = $this->app->parseObject($options->repeat);
 
@@ -40,10 +42,14 @@ class core extends Module
         foreach ($repeater as $key => $value) {
             $this->app->data = array();
 
-            if (isset($options->outputFields) && is_array($options->outputFields)) {
-                if (is_array($value) || is_object($value)) {
-                    foreach ($value as $k => $v) {
-                        if (in_array($k, $options->outputFields)) {
+            if (is_array($value) || is_object($value)) {
+                foreach ($value as $k => $v) {
+                    if ($options->outputFilter == 'exclude') {
+                        if (!(isset($options->outputFields) && in_array($k, $options->outputFields))) {
+                            $this->app->data[$k] = $v;
+                        }
+                    } else {
+                        if (isset($options->outputFields) && in_array($k, $options->outputFields)) {
                             $this->app->data[$k] = $v;
                         }
                     }
@@ -176,8 +182,10 @@ class core extends Module
 
     public function redirect($options) {
         option_require($options, 'url');
+        option_default($options, 'status', 302);
 
-        header('Location: ' . $this->app->parseObject($options->url));
+        header('Cache-Control: no-store');
+        header('Location: ' . $this->app->parseObject($options->url), TRUE, $options->status == 301 ? 301 : 302);
         exit();
     }
 
@@ -217,5 +225,31 @@ class core extends Module
         }
 
         return $data;
-}
+    }
+
+    public function group($options, $name) {
+        option_require($options, 'exec');
+
+        $data = array();
+
+        if (!empty($name)) {
+            $appData = $this->app->data;
+            $this->app->data = array();
+            $this->app->exec($options->exec, TRUE);
+            $data = $this->app->data;
+            $this->app->data = $appData;
+        } else {
+            $this->app->exec($options->exec, TRUE);
+        }
+
+        return $data;
+    }
+
+    public function randomUUID() {
+        $data = function_exists('random_bytes') ? random_bytes(16) : openssl_random_pseudo_bytes(16);
+        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
+        $data[7] = chr(ord($data[8]) & 0x3f | 0x80);
+        return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+      }
+      
 }
