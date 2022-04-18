@@ -1,17 +1,81 @@
 {
   "type": "mysql",
   "connection": {
-    "host": "localhost",
-    "user": "root",
-    "database": "crm"
+    "host": "nocodehost.com.br",
+    "user": "nocodeho_rafael",
+    "password": "R@fael9814",
+    "database": "nocodeho_crm"
   },
   "direct": true,
   "schema": {
     "tables": {
+      "followups": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "files": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "department_tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "tickets": "department_id"
+        }
+      },
+      "type_user": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "users": "type_user_id"
+        }
+      },
+      "tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "followups": "ticket_id",
+          "files": "ticket_id",
+          "notifications": "ticket_id"
+        }
+      },
+      "status_tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "products": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "tickets": "product_id"
+        }
+      },
       "permissions": {
         "db": {
           "engine": "InnoDB",
-          "schema": "crm",
+          "schema": "nocodeho_crm",
           "collation": "utf8mb4_general_ci"
         },
         "refs": {
@@ -21,38 +85,14 @@
       "notifications": {
         "db": {
           "engine": "InnoDB",
-          "schema": "crm",
+          "schema": "nocodeho_crm",
           "collation": "utf8mb4_general_ci"
-        }
-      },
-      "followups": {
-        "db": {
-          "engine": "InnoDB",
-          "schema": "crm",
-          "collation": "utf8mb4_general_ci"
-        }
-      },
-      "files": {
-        "db": {
-          "engine": "InnoDB",
-          "schema": "crm",
-          "collation": "utf8mb4_general_ci"
-        }
-      },
-      "department_tickets": {
-        "db": {
-          "engine": "InnoDB",
-          "schema": "crm",
-          "collation": "utf8mb4_general_ci"
-        },
-        "refs": {
-          "tickets": "department_id"
         }
       },
       "users": {
         "db": {
           "engine": "InnoDB",
-          "schema": "crm",
+          "schema": "nocodeho_crm",
           "collation": "utf8mb4_general_ci"
         },
         "columns": {
@@ -235,49 +275,10 @@
           }
         },
         "refs": {
-          "notifications": "user_id",
           "followups": "author_id",
           "files": "author_id",
-          "tickets": "client_id"
-        }
-      },
-      "type_user": {
-        "db": {
-          "engine": "InnoDB",
-          "schema": "crm",
-          "collation": "utf8mb4_general_ci"
-        },
-        "refs": {
-          "users": "type_user_id"
-        }
-      },
-      "tickets": {
-        "db": {
-          "engine": "InnoDB",
-          "schema": "crm",
-          "collation": "utf8mb4_general_ci"
-        },
-        "refs": {
-          "notifications": "ticket_id",
-          "followups": "ticket_id",
-          "files": "ticket_id"
-        }
-      },
-      "status_tickets": {
-        "db": {
-          "engine": "InnoDB",
-          "schema": "crm",
-          "collation": "utf8mb4_general_ci"
-        }
-      },
-      "products": {
-        "db": {
-          "engine": "InnoDB",
-          "schema": "crm",
-          "collation": "utf8mb4_general_ci"
-        },
-        "refs": {
-          "tickets": "product_id"
+          "tickets": "client_id",
+          "notifications": "user_id"
         }
       }
     },

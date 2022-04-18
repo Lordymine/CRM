@@ -1,15 +1,16 @@
 <?php
+// Database Type : "MySQL"
+// Database Adapter : "mysql"
 $exports = <<<'JSON'
 {
-  "name": "dados",
-  "module": "dbconnector",
-  "action": "connect",
-  "options": {
-    "server": "mysql",
-    "databaseType": "MySQL",
-    "connectionString": "mysql:host=localhost;sslverify=false;dbname=crm;user=root;charset=utf8",
-    "meta": false
-  }
+    "name": "dados",
+    "module": "dbconnector",
+    "action": "connect",
+    "options": {
+        "server": "mysql",
+        "connectionString": "mysql:host=nocodehost.com.br;dbname=nocodeho_crm;user=nocodeho_rafael;password=R@fael9814",
+        "meta"  : {}
+    }
 }
 JSON;
 ?>

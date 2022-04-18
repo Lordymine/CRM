@@ -9,7 +9,7 @@
   <ul class="app-menu">
     <li dmx-show="sc_user_session.data.user.permission_level >= 10"><a class="app-menu__item" href="/painel" dmx-class:active="browser1.location.pathname == '/painel/'"><i class="app-menu__icon fa fa-dashboard"></i><span
           class="app-menu__label">Dashboard</span></a></li>
-    <li dmx-show="sc_user_session.data.user.permission_level >= 10"><a class="app-menu__item" href="/painel/usuarios" dmx-class:active="browser1.location.pathname == '/painel/usuarios/'"><i class="app-menu__icon fa fa-users"></i><span
+    <li dmx-show="sc_user_session.data.user.permission_level >= 10"><a class="app-menu__item" href="/painel/usuarios" dmx-class:active="browser1.location.pathname == '/painel/usuarios/'" dmx-show="sc_user_session.data.user.type_user_id==1"><i class="app-menu__icon fa fa-users"></i><span
           class="app-menu__label">Usuários</span></a></li>
     <li><a class="app-menu__item text-white" dmx-bind:href="'/painel/usuarios/perfil/'+sc_user_session.data.user.token" dmx-class:active="browser1.location.pathname == '/painel/usuarios/perfil/'+sc_user_session.data.user.token"><i
           class="app-menu__icon fa fa-user"></i><span class="app-menu__label">Meu Perfil</span></a></li>

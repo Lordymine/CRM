@@ -41,7 +41,7 @@
       "herokuProjectID": "crm-rafa"
     }
   ],
-  "activeTarget": "teste",
+  "activeTarget": "Development",
   "useRouting": true,
   "addBase": true,
   "routingHandler": "apache",

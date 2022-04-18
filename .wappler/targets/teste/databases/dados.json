@@ -1,1 +1,222 @@
-{}
+{
+  "schema": {
+    "tables": {
+      "department_tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "tickets": "department_id"
+        }
+      },
+      "permissions": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "users": "permission_level"
+        }
+      },
+      "notifications": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "followups": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "files": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "users": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "notifications": "user_id",
+          "followups": "author_id",
+          "files": "author_id",
+          "tickets": "client_id"
+        }
+      },
+      "type_user": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "users": "type_user_id"
+        }
+      },
+      "tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "notifications": "ticket_id",
+          "followups": "ticket_id",
+          "files": "ticket_id"
+        }
+      },
+      "status_tickets": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        }
+      },
+      "products": {
+        "db": {
+          "engine": "InnoDB",
+          "schema": "nocodeho_crm",
+          "collation": "utf8mb4_general_ci"
+        },
+        "refs": {
+          "tickets": "product_id"
+        }
+      }
+    },
+    "views": {},
+    "collations": [
+      {
+        "collation": "utf8_general_ci",
+        "charset": "utf8"
+      },
+      {
+        "collation": "utf8_general_mysql500_ci",
+        "charset": "utf8"
+      },
+      {
+        "collation": "utf8mb4_general_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_bin",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_unicode_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_icelandic_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_latvian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_romanian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_slovenian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_polish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_estonian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_spanish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_swedish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_turkish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_czech_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_danish_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_lithuanian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_slovak_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_spanish2_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_roman_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_persian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_esperanto_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_hungarian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_sinhala_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_german2_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_croatian_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_unicode_520_ci",
+        "charset": "utf8mb4"
+      },
+      {
+        "collation": "utf8mb4_vietnamese_ci",
+        "charset": "utf8mb4"
+      }
+    ]
+  },
+  "type": "mysql",
+  "connection": {
+    "host": "nocodehost.com.br",
+    "user": "nocodeho_rafael",
+    "password": "R@fael9814",
+    "database": "nocodeho_crm"
+  },
+  "direct": true
+}
